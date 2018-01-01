@@ -1,0 +1,5 @@
+/*
+
+  Set Javascript specific to the extension configuration view in this file.
+
+*/

@@ -1,0 +1,5 @@
+/*
+
+  Set Javascript specific to the extension live configuration view in this file.
+
+*/
