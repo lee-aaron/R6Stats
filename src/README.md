@@ -18,7 +18,7 @@ cd certs
 
 ## To start the Extensions Boilerplate service
 ```bash
-docker-compose up --build
+sudo docker-compose up --build
 ```
 
 ## Further documentation

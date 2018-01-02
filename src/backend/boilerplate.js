@@ -24,9 +24,13 @@ app.use((req, res, next) => {
 
 app.use(express.static('../frontend'))
 
+app.get("*", (req, res) => {
+  res.send("Hello World!");
+});
+
 let options = {
-   key  : fs.readFileSync('/boilerplate/certs/testing.key'),
-   cert : fs.readFileSync('/boilerplate/certs/testing.crt')
+   key  : fs.readFileSync('/src/certs/testing.key'),
+   cert : fs.readFileSync('/src/certs/testing.crt')
 };
 
 const PORT = 8080;
