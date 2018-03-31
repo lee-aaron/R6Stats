@@ -14,17 +14,56 @@ or in the "license" file accompanying this file. This file is distributed on an 
 
 -->
 <html lang="">
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="x-ua-compatible" content="ie=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="css/common.css">
-        <link rel="stylesheet" href="css/config.css">
-    </head>
-    <body>
-        <p>This is the config page!</p>
-        <script src="https://extension-files.twitch.tv/helper/v1/twitch-ext.min.js"></script>
-        <script src="js/common.js"></script>
-        <script src="js/config.js"></script>
-    </body>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/config.css">
+</head>
+
+<body>
+    <div id="config" v-cloak>
+        <div class="alert error" v-if="error">{{error}}</div>
+        <div class="form" v-if="initialized">
+            <fieldset>
+                <div class="label-wrapper">
+                    <label for="profile-name">{{profileNameLabel}}</label>
+                </div>
+                <div class="input-wrapper">
+                    <input type="text" v-model.trim="profile.name" class="twitch-input" id="profile-name" placeholder="R6 Username" />
+                </div>
+            </fieldset>
+            <fieldset>
+                <div class="label-wrapper">
+                    <label for="profile-platform">Platform</label>
+                </div>
+                <div class="input-wrapper">
+                    <select v-model="profile.platform" id="profile-platform" class="twitch-input">
+                        <option value="uplay" selected>UPlay</option>
+                        <option value="ps4">PS4</option>
+                        <option value="xbox">Xbox</option>
+                    </select>
+                </div>
+            </fieldset>
+            <fieldset>
+                <div class="label-wrapper">&nbsp;</div>
+                <div class="input-wrapper" style="text-align: right;">
+                    <button type="submit" class="twitch-button" :disabled="(twitch.context == null || twitch.authorize.token == '' || isSaving == true)"
+                        v-on:click="submitConfig">{{ isSaving ? 'Saving...' : 'Save Changes' }}</button>
+                </div>
+            </fieldset>
+        </div>
+    </div>
+
+
+    <script src="https://extension-files.twitch.tv/helper/v1/twitch-ext.min.js"></script>
+    <script src="https://cdn.polyfill.io/v2/polyfill.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue-resource"></script>
+    <script src="js/common.js"></script>
+    <script src="js/config.js"></script>
+</body>
+
 </html>

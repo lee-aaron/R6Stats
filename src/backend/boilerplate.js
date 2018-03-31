@@ -10,8 +10,6 @@ or in the "license" file accompanying this file. This file is distributed on an 
 const express = require('express');
 const fs = require('fs');
 const https = require('https');
-
-var api = "https://api.r6stats.com/api/v1/players/{}?platform={}"
 const app = express();
 
 app.use((req, res, next) => {

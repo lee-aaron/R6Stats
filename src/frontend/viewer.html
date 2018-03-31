@@ -14,25 +14,211 @@ or in the "license" file accompanying this file. This file is distributed on an 
 
 -->
 <html lang="">
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="x-ua-compatible" content="ie=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Rainbow 6: Siege Live Tracker</title>
-        <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet">
-        <link rel="stylesheet" href="css/common.css">
-        <link rel="stylesheet" href="css/viewer.css">
-    </head>
-    <body>
-        <div id="view">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Rainbow 6: Siege Live Tracker</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet">
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/viewer.css">
+</head>
+
+<body>
+    <div id="view" v-cloak>
+        <template v-if="state == 'loaded'">
             <header>
-                <div class="user">
-                    Hi
+                <div class="top-bar">
+                    <div class="user">
+                        <img :src="data.Avatar" />
+                        <div class="user-data">
+                            <span class="username">{{ data.PlayerName }}</span>
+                            <span>
+                                <a :href="'https://r6.tracker.network/profile/pc/' + data.PlayerName + '?utm_source=twitchrt&utm_medium=panel'" target="_top"
+                                    style="color: #f99e1a; font-size: .7em;">View All Stats</a>
+                            </span>
+                        </div>
+                    </div>
                 </div>
+                <div class="timestamp" v-if="lastUpdated">Last Refreshed
+                    <span :data-livestamp="lastUpdated"></span>
+                </div>
+
+                <nav>
+                    <ul>
+                        <li :class="{ active: activeTab == 'stats' }" @click="changeTab('stats')">Stats</li>
+                        <li :class="{ active: activeTab == 'progression' }" @click="changeTab('progression')">Match History</li>
+                        <li :class="{ active: activeTab == 'about' }" @click="changeTab('about')">About</li>
+                    </ul>
+                </nav>
             </header>
-        </div>
-        <script src="https://extension-files.twitch.tv/helper/v1/twitch-ext.min.js"></script>
-        <script src="js/common.js"></script>
-        <script src="js/viewer.js"></script>
-    </body>
+            <main>
+                <section v-if="activeTab == 'stats'" class="section-stats" :class="{ active: activeTab == 'stats' }">
+                    <div class="material-card">
+                        <div class="card-header">
+                            <h3 class="card-title">{{ data.seasonDisplay }}</h3>
+                            <div class="card-tools">
+                                <a class="card-tools-item" :class="{ region: true, active: selectedRegion == 'agg' }" href="javascript:;" @click="selectedRegion = 'agg'">ALL</a>
+                                <a v-if="na > 0" class="card-tools-item" :class="{ region: true, active: selectedRegion == 'na' }" href="javascript:;" @click="selectedRegion = 'na'">NA</a>
+                                <a v-if="sa > 0" class="card-tools-item" :class="{ region: true, active: selectedRegion == 'sa' }" href="javascript:;" @click="selectedRegion = 'sa'">SA</a>
+                                <a v-if="eu > 0" class="card-tools-item" :class="{ region: true, active: selectedRegion == 'eu' }" href="javascript:;" @click="selectedRegion = 'eu'">EU</a>
+                                <a v-if="as > 0" class="card-tools-item" :class="{ region: true, active: selectedRegion == 'as' }" href="javascript:;" @click="selectedRegion = 'as'">AS</a>
+                                <a v-if="oc > 0" class="card-tools-item" :class="{ region: true, active: selectedRegion == 'oc' }" href="javascript:;" @click="selectedRegion = 'oc'">OC</a>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="stat-row" v-for="rank in rankStats">
+                                <h4>{{ rank.Match.toUpperCase() }} - {{ getPubgRegion(rank.Region) }}</h4>
+                                <div style="display:flex;">
+                                    <div class="rank-item">
+                                        <div class="rank-value">
+                                            {{ getFieldDisplayValue(rank, 'Rating') }}
+                                        </div>
+                                        <div class="rank-rank">
+                                            #{{ getFieldRank(rank, 'Rating') }}
+                                        </div>
+                                        <div class="rank-label">
+                                            Rating
+                                        </div>
+                                    </div>
+                                    <div class="rank-item">
+                                        <div class="rank-value">
+                                            {{ getFieldDisplayValue(rank, 'Wins') }}
+                                        </div>
+                                        <div class="rank-rank">
+                                            #{{ getFieldRank(rank, 'Wins') }}
+                                        </div>
+                                        <div class="rank-label">
+                                            Wins
+                                        </div>
+                                    </div>
+                                    <div class="rank-item">
+                                        <div class="rank-value">
+                                            {{ getFieldDisplayValue(rank, 'Top10s') }}
+                                        </div>
+                                        <div class="rank-rank">
+                                            #{{ getFieldRank(rank, 'Top10s') }}
+                                        </div>
+                                        <div class="rank-label">
+                                            Top 10
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <section v-if="activeTab == 'progression'" class="section-progression" :class="{ active: activeTab == 'progression' }">
+                    <div class="trn-profile">
+                        <div class="profile-main">
+                            <div class="content">
+                                <div class="material-card" v-for="match in data.MatchHistory">
+                                    <div class="card-header" style="justify-content: space-between;">
+                                        <h3 class="card-title small">
+                                            {{ moment.utc(match.Updated).fromNow() }}
+                                        </h3>
+                                        <div class="card-header-right">
+                                            {{ match.MatchDisplay }} - {{ match.RegionDisplay }}
+                                        </div>
+                                    </div>
+
+                                    <div class="card-body">
+                                        <div class="pubg-overview-item">
+                                            <div class="rating">
+                                                <span class="name">Rating</span>
+                                                <span class="value">
+                                                    <span>{{ match.Rating }}</span>
+                                                    <span v-if="match.RatingChange > 0" class="delta">+{{ match.RatingChange.toLocaleString() }}</span>
+                                                    <span v-if="match.RatingChange < 0" class="delta">{{ match.RatingChange.toLocaleString() }}</span>
+                                                </span>
+                                                <span class="rank">
+                                                    <span class="color-green big">#{{ match.RatingRank.toLocaleString() }}</span>
+                                                </span>
+                                            </div>
+                                            <div class="stats-large">
+                                                <div v-if="match.Rounds == 1" class="stat">
+                                                    <div class="name">Result</div>
+                                                    <div v-if="match.Wins == 1" class="value" data-stat="Level">
+                                                        <img src="images/trophy.png" class="trophy" /> WINNER
+                                                    </div>
+                                                    <div v-if="match.Wins == 0" class="value" data-stat="Level">
+                                                        DIED
+                                                    </div>
+                                                </div>
+                                                <div v-if="match.Rounds > 1" class="stat">
+                                                    <div class="name">Rounds</div>
+                                                    <div v-if="match.Wins == 0" class="value" data-stat="Level">
+                                                        {{ match.Rounds }}
+                                                        <span v-if="match.Wins > 0">
+                                                            ({{ match.Wins }}) Wins
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div class="stat">
+                                                    <div class="name">Top 10</div>
+                                                    <div v-if="match.Rounds == 1 && match.Top10 == 1" class="value" data-stat="Level">
+                                                        <img src="images/trophy.png" class="trophy" /> Top 10</div>
+                                                    <div v-if="match.Rounds == 1 && match.Top10 == 0" class="value" data-stat="Level">No</div>
+                                                    <div v-if="match.Rounds > 1" class="value" data-stat="Level"> {{ match.Top10 }}</div>
+                                                </div>
+                                                <div class="stat">
+                                                    <div class="name" title="How much the Rating Rank changed since last Match">Rank Div.</div>
+                                                    <div class="value" data-stat="Level">
+                                                        <span v-if="match.RatingRankChange < 0" class="color-green">{{ match.RatingRankChange.toLocaleString() }}</span>
+                                                        <span v-if="match.RatingRankChange > 0" class="color-red">+{{ match.RatingRankChange.toLocaleString() }}</span>
+                                                    </div>
+                                                </div>
+
+                                                <div class="stat">
+                                                    <div class="name">Kills</div>
+                                                    <div class="value" data-stat="Level">{{ match.Kills }}</div>
+                                                </div>
+                                                <div class="stat">
+                                                    <div class="name">Assists</div>
+                                                    <div class="value" data-stat="Level">{{ match.Assists }}</div>
+                                                </div>
+                                                <div class="stat">
+                                                    <div class="name">K/d</div>
+                                                    <div class="value" data-stat="Level">{{ match.Kd }}</div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <section v-if="activeTab == 'about'" class="section-event-feed" :class="{ active: activeTab == 'about' }">
+                    <div class="material-card">
+                        <div class="card-header">
+                            <h3 class="card-title">R6 Tracker for Twitch</h3>
+                        </div>
+                        <div class="card-body">
+                            <h3>FAQ</h3>
+                            Match History will update after the match ends, and could take a few mins to appear.
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </template>
+        <template v-if="state == 'loading'">
+            <scale-loader class="loader" :loading="true" :color="'#fff'"></scale-loader>
+        </template>
+        <template v-if="state == 'failed'">
+            <div class="error">Something went wrong while trying to fetch the player results. Please try again by refreshing.</div>
+
+            <a href="javascript:;" onclick="location.reload();" style="color:White">Refresh</a>
+        </template>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/vue/latest/vue.js"></script>
+    <script src="https://extension-files.twitch.tv/helper/v1/twitch-ext.min.js"></script>
+    <script src="js/common.js"></script>
+    <script src="js/viewer.js"></script>
+</body>
+
 </html>
