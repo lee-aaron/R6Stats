@@ -1,12 +1,5 @@
-/*
-
-  Set Javascript specific to the extension configuration view in this file.
-
-*/
-
-//var ENDPOINT_BASE = 'https://twitch.tracker.network/r6';
-//var ENDPOINT_BASE = 'https://localhost.twitch.tv:8000/r6';
-var ENDPOINT_BASE = 'https://localhost';
+//var ENDPOINT_BASE = 'https://twitch.tracker.network/pubg';
+var ENDPOINT_BASE = 'https://localhost:8080/pubg';
 Vue.http.options.root = ENDPOINT_BASE;
 
 var app = new Vue({
@@ -102,15 +95,17 @@ var app = new Vue({
   }
 })
 
-window.Twitch.ext.onAuthorized(function (auth) {
-  console.log(auth);
+Twitch.ext.onAuthorized(function (authorize) {
+  app.twitch.authorize = authorize;
+  console.log("onAuthorized", authorize);
 });
 
-window.Twitch.ext.onContext(function (context, contextFields) {
-  console.log(context);
-  console.log(contextFields);
+Twitch.ext.onContext(function (context) {
+  app.twitch.context = context;
+  console.log("onContext", context);
 });
 
-window.Twitch.ext.onError(function (err) {
-  console.error(err);
+Twitch.ext.onError(function (e) {
+  app.onTwitchError(e);
+  console.log("onError", e);
 });

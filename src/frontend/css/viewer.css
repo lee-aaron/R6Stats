@@ -1,22 +1,563 @@
-/*
-Copyright 2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+html, body {
+  margin: 0;
+  font-size: 12px;
+  font-family: Roboto, Verdana, Geneva, Tahoma, sans-serif;
+}
 
-Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with the License. A copy of the License is located at
-
-    http://aws.amazon.com/apache2.0/
-
-or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
-*/
-
-/*
-
-  Set CSS specific to the extension viewer view in this file.
-
-*/
+html {
+}
 
 body {
-	font: 12px arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
 }
-div {
-	margin: 0px;
+a {
+  color:white;
+  text-decoration: none;
+}
+#view {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+[v-cloak] {
+  display: none;
+}
+
+a.region {
+  text-decoration: none;
+  color: white;
+}
+a.region.selected {
+  color: #f99e1a;
+  text-decoration: none;
+}
+
+img.trophy {
+ width: 13px;
+}
+
+.rank-item {
+  width: 30%; margin-left: 5px;text-align: center;
+}
+.rank-value {
+  font-size:18px;font-weight:bold;text-align: center;
+}
+.rank-rank {
+  font-size:12px;font-weight:bold;color:#77b300;text-align: center;
+}
+.rank-label {
+  font-size:12px;font-weight:bold;color:gray;
+}
+.text-muted {
+  opacity: 0.54;
+}
+
+.error {
+  background: #B71C1C;
+  color: #fff;
+  padding: .33rem;
+  margin: 1rem;
+}
+
+.loader {
+  margin-top: 50px;
+}
+
+header {
+  display: flex;
+  flex-direction: column;
+  padding: 1.25rem 1.25rem 0;
+}
+
+header .top-bar {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+header .user {
+  display: flex;
+  align-items: center;
+}
+
+header .user .user-data {
+  margin-left: 5px;
+}
+
+header .user .username {
+  font-size: 1.25rem;
+  font-weight: 700;
+  display: block;
+}
+
+
+header .user .platform {
+  font-size: 0.83rem;
+  font-weight: 300;
+  text-transform: uppercase;
+}
+
+header .partners {
+  font-size: 0;
+}
+
+header .partners .icon {
+  height: 21px;
+  margin-left: 1rem;
+  text-decoration: none;
+}
+
+nav {
+  margin: 1.25rem -1.25rem 0;
+}
+
+nav ul {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+nav ul li {
+  cursor: pointer;
+  opacity: 0.54;
+  border-bottom: 3px solid transparent;
+  flex: 1;
+  height: 2.5rem;
+  line-height: 2.5rem;
+  font-size: 0.83rem;
+  font-weight: 700;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+nav ul li:hover {
+  border-color: rgba(0, 0, 0, 0.10);
+  background-color: rgba(0, 0, 0, 0.10);
+}
+
+nav ul li.active {
+  opacity: 1;
+}
+
+main {
+  flex: 1;
+  overflow-y: scroll;
+  padding: 1.25rem;
+  -ms-overflow-style: -ms-autohiding-scrollbar;
+  background: #111;
+}
+
+main::-webkit-scrollbar,
+main::-ms-scrollbar {
+  border-radius: 5px;
+  width: 10px;
+}
+
+main::-webkit-scrollbar *,
+main::-ms-scrollbar * {
+  background: transparent;
+}
+
+body.theme-trn:hover main::-webkit-scrollbar-thumb,
+main::-ms-scrollbar-thumb {
+  background: transparent !important;
+}
+
+.section-stats.active,
+.section-progression.active,
+.section-event-feed.active {
+  display: flex;
+  flex-direction: column;
+}
+
+.section-stats .stat-rows,
+.section-progression .stat-rows {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 2rem;
+}
+
+.section-stats .stat-rows .stat-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.section-stats .stat-rows .stat-row .stat-icon {
+  height: 4rem;
+}
+
+
+.section-stats .stat-rows .stat-row .stat-info,
+.section-progression .stat-rows .stat-row .stat-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  text-transform: uppercase;
+  line-height: 1rem;
+  padding-left: 0.75rem;
+}
+
+
+.section-stats .stat-rows .stat-row .stat-info .stat-name,
+.section-progression .stat-rows .stat-row .stat-info .stat-name {
+  font-weight: 700;
+}
+
+.section-stats .stat-rows .stat-row .stat-info .stat-description,
+.section-progression .stat-rows .stat-row .stat-info .stat-description {
+  font-size: 0.83rem;
+  font-weight: 700;
+  opacity: 0.54;
+}
+
+.section-stats .stat-rows .stat-row .stat-info .stat-progress {
+  display: flex;
+  flex-direction: row;
+  width: 50%;
+  max-width: 10rem;
+}
+
+.section-stats .stat-rows .stat-row .stat-info .stat-progress .progress {
+  color: #fff;
+  padding: 1px 2px;
+  font-weight: 700;
+  margin-right: 4px;
+  font-size: 11px;
+  line-height: 11px;
+}
+
+.section-stats .stat-rows .stat-row .stat-info .stat-progress .progress-up {
+  background-color: #3e9b50;
+}
+
+.section-stats .stat-rows .stat-row .stat-info .stat-progress .progress-down {
+  background-color: #9b3e3e;
+}
+
+.section-stats .stat-rows .stat-row .stat-value,
+.section-progression .stat-rows .stat-row .stat-value {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.section-stats .stat-rows .stat-row .stat-value .value,
+.section-progression .stat-rows .stat-row .stat-value .value {
+  font-size: 2rem;
+  font-weight: 300;
+}
+
+.section-stats .stat-rows .stat-row .stat-value .delta {
+  font-size: 0.83rem;
+  font-weight: 700;
+  line-height: 0.83rem;
+  padding: 0.16rem 0.33rem;
+}
+
+.section-stats .stat-columns {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.section-stats .stat-columns .stat-col {
+  display: flex;
+  flex-direction: column;
+  width: 50%;
+  margin-bottom: 1rem;
+}
+
+.section-stats .stat-columns .stat-col:nth-child(even) {
+  width: calc(50% - 1rem);
+}
+
+.section-stats .stat-columns .stat-col .stat-name {
+  font-size: 0.83rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  line-height: 0.83rem;
+  margin-bottom: 0.33rem;
+}
+
+.section-stats .stat-columns .stat-col .stat-value {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.section-stats .stat-columns .stat-col .stat-value .value {
+  font-size: 2rem;
+  font-weight: 300;
+}
+
+.section-stats .stat-columns .stat-col .stat-value .delta {
+  font-size: 0.83rem;
+  font-weight: 700;
+  line-height: 0.83rem;
+  padding: 0.16rem 0.33rem;
+  margin-left: 0.33rem;
+}
+
+.section-event-feed {
+  flex-direction: column;
+}
+
+.section-event-feed .feed-item {
+  border-left: 1px solid;
+  display: flex;
+  margin-left: 2rem;
+  margin-bottom: 1rem;
+  padding: 0.5rem 0 0.5rem 1rem;
+  min-height: 8rem;
+  opacity: 0.54;
+  position: relative;
+}
+
+.section-event-feed .feed-item.active {
+  opacity: 1;
+}
+
+.section-event-feed .feed-item .timestamp {
+  flex: 0;
+  transform: rotate(90deg);
+  transform-origin: top left;
+  position: absolute;
+  white-space: nowrap;
+  text-transform: uppercase;
+  font-weight: 700;
+  margin-left: -1.5rem;
+}
+
+.section-event-feed .feed-item .timestamp span {
+  display: block;
+  transform: rotate(180deg);
+}
+
+.section-event-feed .feed-item .events {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  text-transform: uppercase;
+  font-weight: 300;
+}
+
+/* Default TRN theme */
+
+body.theme-trn {
+  background-color: #212121;
+  color: #fff;
+}
+
+body.theme-trn header nav ul li.active {
+  border-color: #fff;
+}
+
+body.theme-trn:hover main::-webkit-scrollbar-thumb,
+main::-ms-scrollbar-thumb {
+  background: #000 !important;
+  opacity: 0.5;
+}
+
+body.theme-trn .section-stats .stat-rows .stat-row .stat-info .stat-progress {
+  border-color: #fff;
+}
+
+body.theme-trn .section-stats .stat-rows .stat-row .stat-info .stat-progress .fill {
+  background-color: #fff;
+}
+
+body.theme-trn .section-stats .stat-rows .stat-row .stat-value .delta {
+  background-color: #fff;
+  color: #212121;
+}
+
+body.theme-trn .section-stats .stat-columns .stat-col .stat-value .delta {
+  background-color: #fff;
+  color: #212121;
+}
+
+body.theme-trn .section-progression .stat-rows .stat-row .stat-graph {
+  background-color: rgba(0, 0, 0, 0.15);
+}
+
+body.theme-trn .ct-series-a .ct-line,
+body.theme-trn .ct-series-a .ct-bar,
+body.theme-trn .ct-series-a .ct-slice-donut {
+  stroke: #fff;
+}
+
+body.theme-trn .chartist-tooltip {
+  background-color: #fff;
+  color: #212121;
+}
+
+body.theme-trn .chartist-tooltip:before {
+  border-top-color: #fff;
+}
+
+/* Twitch Light theme */
+
+body.theme-twitch-light {
+  background-color: #fff;
+  color: #6441A4;
+}
+
+body.theme-twitch-light header {
+  background: #6441A4;
+  color: #fff;
+}
+
+body.theme-twitch-light:hover main::-webkit-scrollbar-thumb,
+main::-ms-scrollbar-thumb {
+  background: #6441A4 !important;
+  opacity: 0.5;
+}
+
+body.theme-twitch-light nav ul li.active {
+  border-color: #fff;
+}
+
+body.theme-twitch-light .section-stats .stat-rows .stat-row .stat-info .stat-progress {
+  border-color: #6441A4;
+  opacity: 1;
+}
+
+body.theme-twitch-light .section-stats .stat-rows .stat-row .stat-info .stat-progress .fill {
+  background-color: #6441A4;
+}
+
+body.theme-twitch-light .section-stats .stat-rows .stat-row .stat-value .delta {
+  background-color: #6441A4;
+  color: #fff;
+}
+
+body.theme-twitch-light .section-stats .stat-columns .stat-col .stat-value .delta {
+  background-color: #6441A4;
+  color: #fff;
+}
+
+
+body.theme-twitch-light .section-progression .stat-rows .stat-row .stat-graph {
+  background-color: #fff;
+}
+
+body.theme-twitch-light .ct-series-a .ct-line,
+body.theme-twitch-light .ct-series-a .ct-bar,
+body.theme-twitch-light .ct-series-a .ct-slice-donut {
+  stroke: #6441A4;
+}
+
+body.theme-twitch-light .chartist-tooltip {
+  background-color: #6441A4;
+  color: #fff;
+}
+
+body.theme-twitch-light .chartist-tooltip:before {
+  border-top-color: #6441A4;
+}
+
+
+.material-card {
+  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
+  background: #212121;
+  box-sizing: border-box;
+  border-radius: 2px;
+  margin-bottom: 8px;
+  width: 100%;
+}
+.material-card .card-header {
+  display: flex;
+  padding: 8px;
+  padding-bottom: 0;
+  border-top-left-radius: 2px;
+  border-top-right-radius: 2px;
+}
+.material-card .card-header .card-title {
+  font-weight: normal;
+  margin: 0;
+}
+.material-card .card-header .card-tools {
+  margin-left: auto;
+  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
+  display: inline-block;
+  max-height: 22px;
+  display: flex;
+}
+.material-card .card-header .card-tools .card-tools-item {
+  display: inline-block;
+  padding: 3px 5px;
+  text-decoration: none;
+  color: #ffffff;
+  background: #F99E1A;
+  transition: all .1s ease;
+  font-size: 12px;
+  line-height: 1;
+  cursor: pointer;
+  border: none;
+}
+.material-card .card-header .card-tools .card-tools-item:hover {
+  background: #fab34c;
+}
+.material-card .card-header .card-tools .card-tools-item.active,
+.material-card .card-header .card-tools .card-tools-item:active {
+  background: #da8406;
+}
+.material-card .card-header .card-tools .card-tools-item:first-child {
+  border-top-left-radius: 2px;
+  border-bottom-left-radius: 2px;
+}
+.material-card .card-header .card-tools .card-tools-item:last-child {
+  border-top-right-radius: 2px;
+  border-bottom-right-radius: 2px;
+}
+.material-card .card-body {
+  padding: 8px;
+}
+.material-card .card-table-material {
+  width: 100%;
+  background: none;
+}
+.material-card .card-table-material thead {
+  background: none !important;
+}
+.material-card .card-table-material thead tr {
+  height: 46px;
+}
+.material-card .card-table-material tbody tr {
+  height: 38px;
+}
+.material-card .card-table-material tbody tr:last-child {
+  border-bottom: unset;
+}
+.material-card .card-table-material tr {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+.material-card .card-table-material tr th,
+.material-card .card-table-material tr td {
+  padding: 8px;
+}
+.material-card .card-table-material tr th a,
+.material-card .card-table-material tr td a {
+  text-decoration: none;
+}
+.material-card .card-table-material td.align-right,
+.material-card .card-table-material th.align-right {
+  text-align: right;
+}
+.material-card .card-pagination {
+  margin-top: 0;
+  background: unset;
+  border: unset;
 }
