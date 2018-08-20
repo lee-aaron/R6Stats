@@ -1,5 +1,5 @@
 //var ENDPOINT_BASE = 'https://twitch.tracker.network/pubg';
-var ENDPOINT_BASE = 'https://localhost:8080/pubg';
+var ENDPOINT_BASE = 'https://localhost.rig.twitch.tv:8080/';
 Vue.http.options.root = ENDPOINT_BASE;
 
 var app = new Vue({

@@ -22,5 +22,3 @@ if (window.Twitch.ext) {
 }
 
 */
-
-var api = "https://api.r6stats.com/api/v1/players/{}?platform={}"

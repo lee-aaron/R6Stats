@@ -1,5 +1,5 @@
 //var ENDPOINT_BASE = 'https://twitch.tracker.network/pubg';
-var ENDPOINT_BASE = 'https://localhost:8080/pubg';
+var ENDPOINT_BASE = 'https://localhost.rig.twitch.tv:8080/';
 Vue.http.options.root = ENDPOINT_BASE;
 
 var app = new Vue({
@@ -15,9 +15,10 @@ var app = new Vue({
       },
       context: null
     },
-    profileNameLabel: 'Rainbow Six Siege Username',
+    profileNameLabel: 'Wargaming Username',
     profile: {
-      platform: 'uplay',
+      server: 'na',
+      game: 'wot',
       name: ''
     },
     isSaving: false,
@@ -27,16 +28,16 @@ var app = new Vue({
 
   },
   watch: {
-    'profile.platform': function (newVal, oldVal) {
+    'profile.server': function (newVal, oldVal) {
       switch (newVal) {
         case 1:
-          this.profileNameLabel = '';
+          this.profileNameLabel = 'Gamertag';
           break;
         case 2:
-          this.profileNameLabel = '';
+          this.profileNameLabel = 'PSN ID';
           break;
         case 3:
-          this.profileNameLabel = '';
+          this.profileNameLabel = 'Steam ID';
           break;
       }
     },
