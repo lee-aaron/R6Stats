@@ -11,7 +11,7 @@ const express = require('express');
 const fs = require('fs');
 const https = require('https');
 const bodyParser = require('body-parser');
-require('isomorphic-fetch');
+const request = require('sync-request');
 const app_id = require('./appid');
 const app = express();
 
@@ -30,30 +30,25 @@ app.use(bodyParser.json());
 app.get("/:userID/config", (req, res, next) => {
 
   if (!fs.existsSync(req.params['userID'] + '.json')) {
-    res.writeHead(404);
-    res.end();
-    return next();
+    res.status(404);
+    return;
   }
 
   fs.readFile(req.params['userID'] + '.json', 'utf8', (err, data) => {
     if (err) throw err;
     console.log(data);
-    res.writeHead(200);
-    res.write(data);
-    res.end();
+    res.status(200);
+    res.send(data);
   });
 
 });
 
 app.post("/:userID/config", (req, res, next) => {
 
-  console.log(req.params['userID'] + ".json POST");
-
   fs.writeFile(req.params['userID'] + '.json', JSON.stringify(req.body), (err) => {
     if (err) throw err;
     console.log("Saved!");
-    res.writeHead(200);
-    res.end();
+    res.status(200);
   });
 
 });
@@ -63,9 +58,8 @@ app.get("/:userID/stats", (req, res, next) => {
   console.log(req.params['userID'] + ' GET');
 
   if (!fs.existsSync(req.params['userID'] + '.json')) {
-    res.writeHead(404);
-    res.end();
-    return next();
+    res.status(404);
+    return;
   }
 
   // get platform from readFile
@@ -94,37 +88,54 @@ app.get("/:userID/stats", (req, res, next) => {
     case "eu":
       server = "eu";
       break;
-    case "asia":
+    case "as":
       server = "asia";
       break;
   }
 
 
-  let api = `https://api.${game}.${server}/${json["profile"]["game"]}/account/list/?application_id=${app_id.app_id}&search=${json["profile"]["name"]}`;
+  let account = `https://api.${game}.${server}/${json["profile"]["game"]}/account/list/?application_id=${app_id.app_id}&search=${json["profile"]["name"]}`;
   
   // return player data
-  let player_data = getData(api);
+  let player_data = getData(account);
 
-  player_data.then(response => {
-    
-    if ( response["status"] != "ok" ) {
+  if ( player_data["status"] != "ok" ) {
+    res.status(player_data["error"]["code"]);
+    res.send(player_data["error"]["message"]);
+    return;
+  }
 
-      res.writeHead(response["error"]["code"]);
-      res.write(response["error"]["message"]);
-      res.end();
-      return;
-    }
+  let account_id = player_data["data"][0]["account_id"];
+  let info = `https://api.${game}.${server}/${json["profile"]["game"]}/account/info/?application_id=${app_id.app_id}&account_id=${account_id}`;
+  let account_info = getData(info);
 
-    
+  if ( account_info["status"] != "ok") {
+    res.status(account_info["error"]["code"]);
+    res.send(account_info["error"]["message"]);
+  }
 
-  });
+  let season_api = `https://api.${game}.${server}/${json["profile"]["game"]}/globalmap/seasons/?application_id=${app_id.app_id}`;
+  let current_season = getData(season_api);
 
+  if ( current_season["status"] != "ok") {
+    res.status(current_season["error"]["code"]);
+    res.send(current_season["error"]["message"]);
+  }
+
+  let data = {
+    "global_rating": account_info["data"][`${account_id}`]["global_rating"],
+    "statistics": account_info["data"][`${account_id}`]["statistics"],
+    "selectedRegion": `${json["profile"]["server"]}`,
+    "season": current_season["data"][0]["season_name"],
+    "playerName": `${json["profile"]["name"]}`
+  };
+  
+  res.status(200);
+  res.send(data);
 });
 
 function getData(api) {
-  return fetch(api)
-    .then(response => response.json())
-    .catch(error => error);
+  return JSON.parse(request('GET', api).getBody());
 }
 
 let options = {

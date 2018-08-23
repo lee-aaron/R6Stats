@@ -2,7 +2,8 @@
   "author": "Twitch Interactive, Inc.",
   "dependencies": {
     "express": "^4.15.4",
-    "isomorphic-fetch": "^2.2.1"
+    "isomorphic-fetch": "^2.2.1",
+    "sync-request": "^6.0.0"
   },
   "description": "Provides a simple starting point to create and locally develop your Twitch extension.",
   "license": "Apache-2.0",

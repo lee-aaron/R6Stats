@@ -49,7 +49,7 @@ img.trophy {
   font-size:12px;font-weight:bold;color:#77b300;text-align: center;
 }
 .rank-label {
-  font-size:12px;font-weight:bold;color:gray;
+  font-size:12px;font-weight:bold;color:gray; padding-bottom: 10px;
 }
 .text-muted {
   opacity: 0.54;

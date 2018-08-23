@@ -20,27 +20,21 @@ var app = new Vue({
     lastUpdated: null,
     selectedRegion: null,
     data: {},
-    rankStats: [],
     na: 0,
-    sa: 0,
+    eu: 0,
     as: 0,
-    oc: 0,
-    eu: 0
+    ru: 0
   },
   watch: {
     'twitch.authorize': function (newVal, oldVal) {
       if (!this.initialized)
         this.initialize();
     },
-    selectedRegion: function() {     
-      this.rankStats = this.data.Stats.filter(function(item) {
-        return item.Region == this.app.selectedRegion && item.Season == this.app.data.defaultSeason; });
-
-        this.na = this.data.Stats.filter(function(i) { return i.Region == 'na'; }).length;
-        this.sa = this.data.Stats.filter(function(i) { return i.Region == 'sa'; }).length;
-        this.as = this.data.Stats.filter(function(i) { return i.Region == 'as'; }).length;
-        this.oc = this.data.Stats.filter(function(i) { return i.Region == 'oc'; }).length;
-        this.eu = this.data.Stats.filter(function(i) { return i.Region == 'eu'; }).length;
+    selectedRegion: function() {
+      this.na = this.data.selectedRegion == 'na' ? this.data.selectedRegion.length : 0;
+      this.ru = this.data.selectedRegion == 'ru' ? this.selectedRegion.length : 0;
+      this.as = this.data.selectedRegion == 'as' ? this.selectedRegion.length : 0;
+      this.eu = this.data.selectedRegion == 'eu' ? this.selectedRegion.length : 0;
     }
   },
   computed: {
@@ -72,22 +66,15 @@ var app = new Vue({
             // TEMPFIX: Sometimes the response is just a single player.
             if (response.body != null) {
               var region = this.selectedRegion;
-
               this.startTime = response.body.startTime || 'Now';
-              this.lastUpdated = new Date();
+              this.lastUpdated = moment().format();
               this.data = response.body;
               if (!this.selectedRegion) {
                 this.selectedRegion = response.body.selectedRegion;
                 region = this.selectedRegion;
               }
-              
-              this.rankStats = response.body.Stats.filter(function(item) { return item.Region == region && item.Season == response.body.defaultSeason; });
-              this.na = this.data.Stats.filter(function(i) { return i.Region == 'na'; }).length;
-              this.sa = this.data.Stats.filter(function(i) { return i.Region == 'sa'; }).length;
-              this.as = this.data.Stats.filter(function(i) { return i.Region == 'as'; }).length;
-              this.oc = this.data.Stats.filter(function(i) { return i.Region == 'oc'; }).length;
-              this.eu = this.data.Stats.filter(function(i) { return i.Region == 'eu'; }).length;
-            } 
+            }
+            console.log(this.data.statistics.all);
             this.state = 'loaded';
           } else {
             this.state = 'failed';
@@ -97,25 +84,16 @@ var app = new Vue({
           this.state = 'failed';
         }
         )
-    },    
+    },
+    formatSeason: function(season) {
+      return season
+      .replace("_", " ")
+      .replace(/^./, function(str){ return str.toUpperCase(); })
+      .trim();
+    },
     getField: function(data, field) {
-      if (data.Stats) {
-        var field = data.Stats.filter(function(item) { return item.field == field })[0];
-        return field;
-      }
-      return null;
-    },
-    getFieldDisplayValue: function(data, field) {
-      if (data.Stats) {
-        var field = this.getField(data,field);
-        return field ? field.displayValue : '';
-      }
-      return '';
-    },
-    getFieldRank: function(data, field) {
-      if (data.Stats) {
-        var field = this.getField(data,field);
-        return field && field.rank ? field.rank.toLocaleString() : '';
+      if (data) {
+        return data[field.toLowerCase()];
       }
       return '';
     },
@@ -130,34 +108,6 @@ var app = new Vue({
 
       if (response && response.update) {
         this.initialize();
-      }
-    },
-    getPubgSeason: function(season) {
-      switch(season) {
-        case '2017-pre2':
-          return 'Early Access #2';
-        case '2017-pre3':
-          return 'Early Access #3';
-        default:
-          return season;
-      }
-    },
-    getPubgRegion: function(region) {
-      switch(region) {
-        case 'as':
-          return 'Asia';
-        case 'na':
-          return 'North America';
-        case 'eu':
-          return 'Europe';
-        case 'sa':
-          return 'South America';
-        case 'oc':
-          return 'Oceania';
-        case 'agg':
-          return 'All Regions';
-        default:
-          return region;
       }
     }
   },
